@@ -1,0 +1,36 @@
+Требования:
+1. Метод save() должен сохранять карту runtimeStorage в параметр outputStream.
+2. Метод load() должен восстанавливать состояние карты runtimeStorage из параметра inputStream.
+
+public class Solution {
+
+    public static Map<String, String> runtimeStorage = new HashMap<>();
+
+    public static void save(OutputStream outputStream) throws Exception {
+        Properties properties = new Properties();
+        properties.putAll(runtimeStorage);
+        properties.store(outputStream, null);
+    }
+
+    public static void load(InputStream inputStream) throws IOException {
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        Set keys = properties.keySet();
+        Iterator<String> iterator = keys.iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            runtimeStorage.putIfAbsent(key, properties.getProperty(key));
+        }
+    }
+
+    public static void main(String[] args) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+             FileInputStream fos = new FileInputStream(reader.readLine())) {
+            load(fos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(runtimeStorage);
+    }
+}
